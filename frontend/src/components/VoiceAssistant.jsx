@@ -171,7 +171,7 @@ const VoiceAssistant = () => {
     >
       <strong>Voice Assistant:</strong>
       <p style={{ margin: '5px 0' }}>
-        {listening ? 'Listening...' : 'Click mic to speak'}
+        {listening ? 'Listening...' : 'Click mic to speak, speak something like "Go to profile, go to doctors, go to neurologist, etc.., also ask general questions"'}
       </p>
       <p style={{ color: '#333' }}><em>{transcript}</em></p>
       <p><strong>Response:</strong> {response}</p>
