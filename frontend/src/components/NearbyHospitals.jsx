@@ -6,8 +6,9 @@ const NearbyHospitals = ({ lat, lng }) => {
 
   useEffect(() => {
     if (lat && lng) {
+      const backendUrl = process.env.REACT_APP_BACKEND_URL || "http://localhost:4000";
       axios
-        .get(`http://localhost:4000/api/places/nearby?lat=${lat}&lng=${lng}`)
+        .get(`${backendUrl}/api/places/nearby?lat=${lat}&lng=${lng}`)
         .then((response) => setPlaces(response.data.results))
         .catch((error) => console.error("Error fetching places:", error));
     }
