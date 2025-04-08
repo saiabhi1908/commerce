@@ -162,11 +162,15 @@ const VoiceAssistant = () => {
         right: 8,
         transform: 'translateY(-50%)',
         backgroundColor: '#f1f1f1',
-        padding: '12px 20px',
+        padding: '15px 20px', // Adjusted padding for a better balance
         borderRadius: '10px',
         boxShadow: '0 0 10px rgba(0,0,0,0.15)',
         fontSize: '14px',
-        zIndex: 1000
+        zIndex: 1000,
+        width: '205px', // Adjusted width to make it a more compact size
+        maxWidth: '90%', // Prevents the box from being too wide on smaller screens
+        minHeight: '180px', // Ensures a minimum height for the box to maintain proportions
+        overflow: 'auto', // In case the content overflows, it becomes scrollable
       }}
     >
       <strong>Voice Assistant:</strong>
@@ -184,7 +188,11 @@ const VoiceAssistant = () => {
           color: 'white',
           border: 'none',
           borderRadius: '5px',
-          cursor: 'pointer'
+          cursor: 'pointer',
+          fontSize: '14px',
+          minWidth: '150px',
+          textAlign: 'center',
+          transition: 'background-color 0.3s',
         }}
       >
         {isListening ? 'Stop Listening' : 'Start Listening'}

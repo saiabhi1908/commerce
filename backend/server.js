@@ -19,9 +19,23 @@ connectCloudinary();
 // middlewares
 app.use(express.json());
 
-// Configure CORS to only allow requests from your frontend domain
+// Configure CORS to allow both local and production frontend URLs
+const allowedOrigins = [
+  "http://localhost:5173",  // Allow local development
+  "https://healthcare-h6xg.onrender.com"  // Allow production URL
+];
+
 app.use(cors({
-  origin: 'https://healthcare-h6xg.onrender.com'  // Replace with your actual frontend URL
+  origin: (origin, callback) => {
+    // Check if the origin matches any in the allowedOrigins list
+    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  methods: ["GET", "POST", "PUT", "DELETE"],  // Allow necessary methods
+  credentials: true,  // If you're using cookies or authentication headers
 }));
 
 // api endpoints
@@ -52,4 +66,5 @@ app.get("/", (req, res) => {
   res.send("API Working");
 });
 
+// Start the server
 app.listen(port, () => console.log(`Server started on PORT:${port}`));
