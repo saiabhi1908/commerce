@@ -1,14 +1,14 @@
 import express from "express";
-import cors from 'cors';
-import 'dotenv/config';
+import cors from "cors";
+import "dotenv/config";
 import connectDB from "./config/mongodb.js";
 import connectCloudinary from "./config/cloudinary.js";
 import userRouter from "./routes/userRoute.js";
 import doctorRouter from "./routes/doctorRoute.js";
 import adminRouter from "./routes/adminRoute.js";
 import placesRouter from "./routes/places.js";
-import sendEmail from './utils/emailService.js';
-import appointmentRouter from './routes/appointmentRoutes.js';
+import sendEmail from "./utils/emailService.js";
+import appointmentRouter from "./routes/appointmentRoutes.js";
 
 // App Config
 const app = express();
@@ -19,30 +19,25 @@ connectCloudinary();
 // Middlewares
 app.use(express.json());
 
-// 🔓 TEMP: Open CORS during deployment testing
-app.use(cors({
-  origin: '*',
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  credentials: true,
-}));
-
+// CORS Configuration
 const allowedOrigins = [
-  "http://localhost:5173", // Dev
-  "https://healthcarefrontend.onrender.com", // Replace this with actual frontend Render/Vercel URL
+  "http://localhost:5173", // Dev (Local frontend during development)
+  "https://healthcarefrontend.onrender.com", // Production frontend (replace with actual frontend URL)
 ];
 
-app.use(cors({
-  origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  credentials: true,
-}));
-
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  })
+);
 
 // API Routes
 app.use("/api/user", userRouter);
@@ -52,20 +47,20 @@ app.use("/api/places", placesRouter);
 app.use("/", appointmentRouter);
 
 // Email test route
-app.get('/test-email', async (req, res) => {
+app.get("/test-email", async (req, res) => {
   const testEmail = process.env.EMAIL_USER;
-  const testTime = new Date(Date.now() + 24 * 60 * 60 * 1000);
+  const testTime = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours from now
 
   try {
     await sendEmail(
       testEmail,
-      '⏰ Appointment Reminder (Test)',
+      "⏰ Appointment Reminder (Test)",
       `This is a test reminder email for your appointment scheduled at ${testTime.toLocaleString()}.`
     );
-    res.send('✅ Test email sent!');
+    res.send("✅ Test email sent!");
   } catch (error) {
-    console.error('❌ Failed to send test email:', error);
-    res.status(500).send('❌ Failed to send test email');
+    console.error("❌ Failed to send test email:", error);
+    res.status(500).send("❌ Failed to send test email");
   }
 });
 
