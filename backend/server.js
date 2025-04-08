@@ -26,22 +26,23 @@ app.use(cors({
   credentials: true,
 }));
 
-// ✅ Later, lock this down after frontend deployed:
-// const allowedOrigins = [
-//   "http://localhost:5173",
-//   "https://your-frontend-domain.com" // replace later
-// ];
-// app.use(cors({
-//   origin: (origin, callback) => {
-//     if (!origin || allowedOrigins.includes(origin)) {
-//       callback(null, true);
-//     } else {
-//       callback(new Error("Not allowed by CORS"));
-//     }
-//   },
-//   methods: ['GET', 'POST', 'PUT', 'DELETE'],
-//   credentials: true,
-// }));
+const allowedOrigins = [
+  "http://localhost:5173", // Dev
+  "https://healthcarefrontend.onrender.com", // Replace this with actual frontend Render/Vercel URL
+];
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true,
+}));
+
 
 // API Routes
 app.use("/api/user", userRouter);
