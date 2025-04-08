@@ -22,7 +22,8 @@ app.use(express.json());
 // Configure CORS to allow both local and production frontend URLs
 const allowedOrigins = [
   "http://localhost:5173",  // Allow local development
-  "https://healthcare-13.onrender.com"  // Allow production URL
+  "https://healthcare-13.onrender.com",
+  "http://localhost:4000",  // Allow production URL
 ];
 
 app.use(cors({
