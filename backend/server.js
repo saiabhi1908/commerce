@@ -8,6 +8,7 @@ import doctorRouter from "./routes/doctorRoute.js";
 import adminRouter from "./routes/adminRoute.js";
 import placesRouter from "./routes/places.js";  // Import the places route
 import sendEmail from './utils/emailService.js';
+import appointmentRouter from './routes/appointmentRoutes.js';
 
 // app config
 const app = express();
@@ -17,13 +18,18 @@ connectCloudinary();
 
 // middlewares
 app.use(express.json());
-app.use(cors());
+
+// Configure CORS to only allow requests from your frontend domain
+app.use(cors({
+  origin: 'https://healthcare-h6xg.onrender.com'  // Replace with your actual frontend URL
+}));
 
 // api endpoints
 app.use("/api/user", userRouter);
 app.use("/api/admin", adminRouter);
 app.use("/api/doctor", doctorRouter);
 app.use("/api/places", placesRouter);  // Add the places route
+app.use("/", appointmentRouter);
 
 app.get('/test-email', async (req, res) => {
   const testEmail = process.env.EMAIL_USER;  // Correct way to access the environment variable

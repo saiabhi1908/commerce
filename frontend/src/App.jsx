@@ -20,40 +20,32 @@ import LanguageRecommendation from './components/LanguageRecommendation';
 
 const App = () => {
   const [location, setLocation] = useState({ lat: null, lng: null });
-  const [prevY, setPrevY] = useState(0); // Store previous mouse Y position for movement tracking
-  const currentLocation = useLocation(); // Get the current route
+  const [prevY, setPrevY] = useState(0);
+  const currentLocation = useLocation();
 
-  // Enable smooth scrolling using CSS for the entire page
   useEffect(() => {
-    document.documentElement.style.scrollBehavior = 'smooth';  // Enable smooth scroll for the entire page
+    document.documentElement.style.scrollBehavior = 'smooth';
   }, []);
 
-  // Detect mouse movement and simulate scrolling based on mouse movement
   useEffect(() => {
     let scrollTimeout;
 
     const handleMouseMove = (event) => {
-      const deltaY = event.movementY; // Get the vertical movement of the mouse
-      
-      if (Math.abs(deltaY) > 5) { // Sensitivity threshold for scrolling
-        // Throttle scroll event to make scrolling smoother
+      const deltaY = event.movementY;
+      if (Math.abs(deltaY) > 5) {
         if (scrollTimeout) clearTimeout(scrollTimeout);
-
         scrollTimeout = setTimeout(() => {
-          window.scrollBy(0, deltaY); // Scroll the page based on the mouse movement
-        }, 20); // Throttle delay of 20ms between scroll actions for smoother performance
+          window.scrollBy(0, deltaY);
+        }, 20);
       }
-
-      setPrevY(event.clientY); // Update previous Y position for next movement
+      setPrevY(event.clientY);
     };
 
-    // Add the mousemove event listener
     window.addEventListener('mousemove', handleMouseMove);
 
-    // Clean up the event listener when the component is unmounted
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
-      if (scrollTimeout) clearTimeout(scrollTimeout); // Clean up timeout if component is unmounted
+      if (scrollTimeout) clearTimeout(scrollTimeout);
     };
   }, [prevY]);
 
@@ -75,13 +67,30 @@ const App = () => {
     <div className='mx-4 sm:mx-[10%]'>
       <ToastContainer />
       <Navbar />
-      <VoiceAssistant /> {/* ✅ Voice Assistant here */}
+
+      {/* Admin Panel Redirect Button and Login Info */}
+      <div className="my-4 flex flex-col items-end gap-2">
+        <button
+          onClick={() => window.open('http://localhost:5174/', '_blank')}
+          className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        >
+          Go to Admin Panel
+        </button>
+
+        <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded w-fit text-sm shadow">
+          <p><strong>Admin Login Details:</strong></p>
+          <p><strong>Email:</strong> admin@practo.com</p>
+          <p><strong>Password:</strong> Laasyap@1908</p>
+        </div>
+      </div>
+
+      <VoiceAssistant />
       <AIChatBot />
+
       {currentLocation.pathname === '/' && <LanguageRecommendation />}
 
-      {/* Only show NearbyHospitals on Home page */}
       {currentLocation.pathname === '/' && location.lat && location.lng ? (
-        <NearbyHospitals lat={location.lat} lng={location.lng} /> // Pass location to NearbyHospitals
+        <NearbyHospitals lat={location.lat} lng={location.lng} />
       ) : (
         <p></p>
       )}
@@ -98,6 +107,7 @@ const App = () => {
         <Route path='/my-profile' element={<MyProfile />} />
         <Route path='/verify' element={<Verify />} />
       </Routes>
+
       <Footer />
     </div>
   );
