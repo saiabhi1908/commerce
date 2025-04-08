@@ -71,7 +71,7 @@ const App = () => {
       {/* Admin Panel Redirect Button and Login Info */}
       <div className="my-4 flex flex-col items-end gap-2">
         <button
-          onClick={() => window.open('https://healthcarestat.onrender.com', '_blank')}
+          onClick={() => window.open('https://healthcareadmin.onrender.com', '_blank')}
           className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
         >
           Go to Admin Panel
