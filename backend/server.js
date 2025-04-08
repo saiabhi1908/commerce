@@ -23,7 +23,7 @@ app.use(express.json());
 const allowedOrigins = [
   "http://localhost:5173",  // Allow local development
   "https://healthcare-13.onrender.com",
-  "https://healthcarefix.onrender.com/",  // Allow production URL
+  "https://healthcarefix.onrender.com",  // Allow production URL
 ];
 
 app.use(cors({
