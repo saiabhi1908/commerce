@@ -6,53 +6,58 @@ import connectCloudinary from "./config/cloudinary.js";
 import userRouter from "./routes/userRoute.js";
 import doctorRouter from "./routes/doctorRoute.js";
 import adminRouter from "./routes/adminRoute.js";
-import placesRouter from "./routes/places.js";  // Import the places route
+import placesRouter from "./routes/places.js";
 import sendEmail from './utils/emailService.js';
 import appointmentRouter from './routes/appointmentRoutes.js';
 
-// app config
+// App Config
 const app = express();
 const port = process.env.PORT || 4000;
 connectDB();
 connectCloudinary();
 
-// middlewares
+// Middlewares
 app.use(express.json());
 
-// Configure CORS to allow both local and production frontend URLs
-const allowedOrigins = [
-  "http://localhost:5173",  // Allow local development
-  "https://healthcare-13.onrender.com",
-  "https://healthcarefix.onrender.com",  // Allow production URL
-];
-
+// 🔓 TEMP: Open CORS during deployment testing
 app.use(cors({
-  origin: (origin, callback) => {
-    // Check if the origin matches any in the allowedOrigins list
-    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-  methods: ["GET", "POST", "PUT", "DELETE"],  // Allow necessary methods
-  credentials: true,  // If you're using cookies or authentication headers
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true,
 }));
 
-// api endpoints
+// ✅ Later, lock this down after frontend deployed:
+// const allowedOrigins = [
+//   "http://localhost:5173",
+//   "https://your-frontend-domain.com" // replace later
+// ];
+// app.use(cors({
+//   origin: (origin, callback) => {
+//     if (!origin || allowedOrigins.includes(origin)) {
+//       callback(null, true);
+//     } else {
+//       callback(new Error("Not allowed by CORS"));
+//     }
+//   },
+//   methods: ['GET', 'POST', 'PUT', 'DELETE'],
+//   credentials: true,
+// }));
+
+// API Routes
 app.use("/api/user", userRouter);
 app.use("/api/admin", adminRouter);
 app.use("/api/doctor", doctorRouter);
-app.use("/api/places", placesRouter);  // Add the places route
+app.use("/api/places", placesRouter);
 app.use("/", appointmentRouter);
 
+// Email test route
 app.get('/test-email', async (req, res) => {
-  const testEmail = process.env.EMAIL_USER;  // Correct way to access the environment variable
-  const testTime = new Date(Date.now() + 24 * 60 * 60 * 1000);  // 24 hours from now
+  const testEmail = process.env.EMAIL_USER;
+  const testTime = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
   try {
     await sendEmail(
-      testEmail,  // Use the actual email from environment variable
+      testEmail,
       '⏰ Appointment Reminder (Test)',
       `This is a test reminder email for your appointment scheduled at ${testTime.toLocaleString()}.`
     );
@@ -63,9 +68,10 @@ app.get('/test-email', async (req, res) => {
   }
 });
 
+// Base route
 app.get("/", (req, res) => {
   res.send("API Working");
 });
 
-// Start the server
-app.listen(port, () => console.log(`Server started on PORT:${port}`));
+// Start Server
+app.listen(port, () => console.log(`🚀 Server started on PORT:${port}`));
