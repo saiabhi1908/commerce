@@ -17,6 +17,7 @@ import VoiceAssistant from './components/VoiceAssistant';
 import AIChatBot from './components/AIChatBot';
 import NearbyHospitals from './components/NearbyHospitals';
 import LanguageRecommendation from './components/LanguageRecommendation';
+import AdminPanel from './pages/AdminPanel'; // ⬅️ Add this import
 
 const App = () => {
   const [location, setLocation] = useState({ lat: null, lng: null });
@@ -97,6 +98,7 @@ const App = () => {
         <Route path='/my-appointments' element={<MyAppointments />} />
         <Route path='/my-profile' element={<MyProfile />} />
         <Route path='/verify' element={<Verify />} />
+        <Route path='/admin' element={<AdminPanel />} />
       </Routes>
       <Footer />
     </div>
