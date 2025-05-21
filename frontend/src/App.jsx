@@ -7,6 +7,7 @@ import VoiceAssistant from './components/VoiceAssistant';
 import AIChatBot from './components/AIChatBot';
 import NearbyHospitals from './components/NearbyHospitals';
 import LanguageRecommendation from './components/LanguageRecommendation';
+import Setup2FA from './pages/Setup2FA';
 
 import Home from './pages/Home';
 import Doctors from './pages/Doctors';
@@ -73,6 +74,7 @@ const App = () => {
         <Route path='/my-profile' element={<MyProfile />} />
         <Route path='/verify' element={<Verify />} />
         <Route path='/admin' element={<AdminPanel />} />
+        <Route path="/setup-2fa" element={<Setup2FA />} />
 
         <Route path='/forgot-password' element={<ForgotPassword />} />
         <Route path='/verify-otp' element={<VerifyOtp />} />
