@@ -8,7 +8,10 @@ import {
     listAppointment, 
     cancelAppointment, 
     paymentStripe, 
-    verifyStripe 
+    verifyStripe,
+    sendOTP,
+    resetPassword,
+    verifyOtp
 } from '../controllers/userController.js';
 
 import upload from '../middleware/multer.js';
@@ -26,5 +29,10 @@ userRouter.get("/appointments", authUser, listAppointment);
 userRouter.post("/cancel-appointment", authUser, cancelAppointment);
 userRouter.post("/payment-stripe", authUser, paymentStripe);
 userRouter.post("/verify-stripe", authUser, verifyStripe);
+
+userRouter.post('/send-otp', sendOTP);
+userRouter.post('/reset-password', resetPassword);
+userRouter.post('/verify-otp', verifyOtp);
+
 
 export default userRouter;

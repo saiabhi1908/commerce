@@ -9,6 +9,8 @@ const userSchema = new mongoose.Schema({
     gender: { type: String, default: 'Not Selected' },
     dob: { type: String, default: 'Not Selected' },
     password: { type: String, required: true },
+    otp: { type: String },
+    otpExpires: { type: Date }
 })
 
 const userModel = mongoose.models.user || mongoose.model("user", userSchema);
