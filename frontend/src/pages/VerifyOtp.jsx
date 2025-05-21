@@ -25,7 +25,7 @@ const VerifyOtp = () => {
     }
 
     try {
-      const res = await axios.post(backendUrl + '/api/user/verify-otp', { email, otp });
+      const res = await axios.post('https://healthy-1-2jaf.onrender.com' + '/api/user/verify-otp', { email, otp });
       if (res.data.success) {
         toast.success('OTP verified');
         navigate('/reset-password', { state: { email, otp } });

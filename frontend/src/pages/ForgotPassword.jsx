@@ -20,7 +20,7 @@ const ForgotPassword = () => {
       return;
     }
     try {
-      const res = await axios.post(backendUrl + '/api/user/send-otp', { email });
+      const res = await axios.post( 'https://healthy-1-2jaf.onrender.com' + '/api/user/send-otp', { email });
       if (res.data.success) {
         toast.success('OTP sent to your email');
         navigate('/verify-otp', { state: { email } });
