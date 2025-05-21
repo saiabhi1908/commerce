@@ -3,7 +3,7 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-const backendUrl = 'http://localhost:4000';  // your backend URL
+const backendUrl = 'https://commerce-v9e9.onrender.com';  // your backend URL
 
 const VerifyOtp = () => {
   const [otp, setOtp] = useState('');

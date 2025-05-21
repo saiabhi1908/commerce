@@ -3,7 +3,7 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 
-const backendUrl = 'http://localhost:4000'; // Adjust this URL as needed
+const backendUrl = 'https://commerce-v9e9.onrender.com'; // Adjust this URL as needed
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
