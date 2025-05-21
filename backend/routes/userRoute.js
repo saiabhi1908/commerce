@@ -34,5 +34,8 @@ userRouter.post('/send-otp', sendOTP);
 userRouter.post('/reset-password', resetPassword);
 userRouter.post('/verify-otp', verifyOtp);
 
-
+userRouter.get('/test', (req, res) => {
+    res.send('✅ /api/user/test is working!');
+  });
+  
 export default userRouter;
