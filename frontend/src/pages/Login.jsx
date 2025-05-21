@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { AppContext } from '../context/AppContext';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom'; // <-- Added Link import
 
 const Login = () => {
   const [state, setState] = useState('Sign Up');
@@ -121,7 +121,8 @@ const Login = () => {
               />
               {state === 'Login' && (
                 <p className="text-right text-blue-600 text-sm mt-1 w-full">
-                  <a href="/forgot-password" className="hover:underline">Forgot Password?</a>
+                  {/* Replaced <a> with Link */}
+                  <Link to="/forgot-password" className="hover:underline">Forgot Password?</Link>
                 </p>
               )}
             </div>
