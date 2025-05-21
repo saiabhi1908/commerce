@@ -3,20 +3,21 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-const backendUrl = 'https://healthy-backend-52qq.onrender.com';  // your backend URL
+const backendUrl = 'http://localhost:4000';  // your backend URL
 
 const VerifyOtp = () => {
   const [otp, setOtp] = useState('');
   const location = useLocation();
   const navigate = useNavigate();
   const email = location.state?.email;
+  const purpose = location.state?.purpose || 'register'; // default to registration
 
   useEffect(() => {
     if (!email) {
-      toast.error('Email not found. Please start from Forgot Password page.');
-      navigate('/forgot-password');
+      toast.error('Email not found. Please start from the Forgot Password or Register page.');
+      navigate(purpose === 'reset' ? '/forgot-password' : '/register');
     }
-  }, [email, navigate]);
+  }, [email, navigate, purpose]);
 
   const handleVerify = async () => {
     if (!otp.trim()) {
@@ -25,10 +26,18 @@ const VerifyOtp = () => {
     }
 
     try {
-      const res = await axios.post('https://healthy-backend-52qq.onrender.com' + '/api/user/verify-otp', { email, otp });
+      // Choose endpoint based on purpose
+      const endpoint = purpose === 'reset' ? '/api/user/verify-reset-otp' : '/api/user/verify-otp';
+      const res = await axios.post(backendUrl + endpoint, { email, otp });
+
       if (res.data.success) {
         toast.success('OTP verified');
-        navigate('/reset-password', { state: { email, otp } });
+        if (purpose === 'reset') {
+          navigate('/reset-password', { state: { email, otp } });
+        } else {
+          // For registration, proceed as needed (e.g., navigate to login)
+          navigate('/login');
+        }
       } else {
         toast.error(res.data.message || 'OTP verification failed');
       }

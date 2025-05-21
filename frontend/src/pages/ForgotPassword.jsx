@@ -3,7 +3,7 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 
-const backendUrl = 'https://healthy-backend-52qq.onrender.com'; // Adjust this URL
+const backendUrl = 'http://localhost:4000'; // Adjust this URL as needed
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
@@ -20,10 +20,12 @@ const ForgotPassword = () => {
       return;
     }
     try {
-      const res = await axios.post( 'https://healthy-backend-52qq.onrender.com' + '/api/user/send-otp', { email });
+      // Use the new endpoint for password reset OTP
+      const res = await axios.post(backendUrl + '/api/user/send-reset-otp', { email });
       if (res.data.success) {
         toast.success('OTP sent to your email');
-        navigate('/verify-otp', { state: { email } });
+        // Optionally pass 'purpose' to distinguish reset flow in verify-otp page
+        navigate('/verify-otp', { state: { email, purpose: 'reset' } });
       } else {
         toast.error(res.data.message || 'Failed to send OTP');
       }
@@ -40,7 +42,7 @@ const ForgotPassword = () => {
         type='email'
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        placeholder='Enter email'
+        placeholder='Enter your email'
       />
       <button onClick={handleSendOtp}>Send OTP</button>
     </div>

@@ -10,7 +10,19 @@ const userSchema = new mongoose.Schema({
     dob: { type: String, default: 'Not Selected' },
     password: { type: String, required: true },
     otp: { type: String },
-    otpExpires: { type: Date }
+    otpExpires: { type: Date },
+    isEmailVerified :{
+        type: Boolean,
+        default: false
+
+    },
+    resetOtp: { type: String },
+    resetOtpExpires: { type: Date },
+    resetVerified: {
+        type: Boolean,
+        default: false,
+      }
+      
 })
 
 const userModel = mongoose.models.user || mongoose.model("user", userSchema);
