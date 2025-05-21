@@ -10,7 +10,7 @@ const LanguageRecommendation = () => {
   const handleSearch = async () => {
     if (!language) return;
     try {
-      const res = await axios.get(`https://healthy-1-2jaf.onrender.com/api/doctor/by-language?language=${language}`);
+      const res = await axios.get(`https://healthy-backend-52qq.onrender.com/api/doctor/by-language?language=${language}`);
       setDoctors(res.data);
     } catch (err) {
       console.error("Failed to fetch doctors", err);

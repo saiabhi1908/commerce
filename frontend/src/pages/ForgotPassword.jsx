@@ -3,7 +3,7 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 
-const backendUrl = 'https://healthy-1-2jaf.onrender.com'; // Adjust this URL
+const backendUrl = 'https://healthy-backend-52qq.onrender.com'; // Adjust this URL
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
@@ -20,7 +20,7 @@ const ForgotPassword = () => {
       return;
     }
     try {
-      const res = await axios.post( 'https://healthy-1-2jaf.onrender.com' + '/api/user/send-otp', { email });
+      const res = await axios.post( 'https://healthy-backend-52qq.onrender.com' + '/api/user/send-otp', { email });
       if (res.data.success) {
         toast.success('OTP sent to your email');
         navigate('/verify-otp', { state: { email } });

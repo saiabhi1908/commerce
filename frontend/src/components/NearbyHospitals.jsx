@@ -7,7 +7,7 @@ const NearbyHospitals = ({ lat, lng }) => {
   useEffect(() => {
     if (lat && lng) {
       axios
-        .get(`https://healthy-1-2jaf.onrender.com/api/places/nearby?lat=${lat}&lng=${lng}`)
+        .get(`https://healthy-backend-52qq.onrender.com/api/places/nearby?lat=${lat}&lng=${lng}`)
         .then((response) => setPlaces(response.data.results))
         .catch((error) => console.error("Error fetching places:", error));
     }
