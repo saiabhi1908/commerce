@@ -21,7 +21,10 @@ const userSchema = new mongoose.Schema({
     resetVerified: {
         type: Boolean,
         default: false,
-      }
+      },
+      twoFactorEnabled: { type: Boolean, default: false },
+twoFactorSecret: { type: String }
+
       
 })
 
