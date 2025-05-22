@@ -1,27 +1,43 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { AppContext } from "../context/AppContext";
 
-const Verify2FA = ({ email }) => {
+
+const Verify2FA = () => {
   const [code, setCode] = useState('');
   const navigate = useNavigate();
+  const { setToken } = useContext(AppContext);  // get setToken from context
 
   const handleVerify = async () => {
+    const storedEmail = localStorage.getItem('2fa_email');
+
+    if (!storedEmail) {
+      toast.error('Email not found. Please login again.');
+      navigate('/login');
+      return;
+    }
+
     if (!code || code.length !== 6) {
       toast.error('Please enter a valid 6-digit code');
       return;
     }
+
     try {
       const res = await axios.post(`https://commerce-v9e9.onrender.com/api/user/verify-2fa`, {
-        email,
+        email: storedEmail,
         token: code,
       });
 
       if (res.data.success) {
+        // Save token in localStorage and also update React context state immediately
         localStorage.setItem('token', res.data.token);
+        setToken(res.data.token);  // <-- THIS updates context & triggers logged-in UI
+        localStorage.removeItem('2fa_email'); // cleanup temporary storage
+
         toast.success('2FA verified successfully!');
-        navigate('/');
+        navigate('/');  // redirect to home or dashboard
       } else {
         toast.error(res.data.message || 'Invalid or expired code');
       }

@@ -195,6 +195,11 @@ const loginUser = async (req, res) => {
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) return res.json({ success: false, message: "Invalid credentials" });
 
+        if (user.twoFactorEnabled) {
+            return res.json({ success: true, twoFactorRequired: true, email: user.email });
+        }
+
+        // No 2FA, generate token
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
         res.json({ success: true, token });
 
@@ -203,6 +208,7 @@ const loginUser = async (req, res) => {
         res.json({ success: false, message: error.message });
     }
 };
+
 
 // ========= USER PROFILE =========
 

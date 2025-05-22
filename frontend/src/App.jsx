@@ -8,6 +8,7 @@ import AIChatBot from './components/AIChatBot';
 import NearbyHospitals from './components/NearbyHospitals';
 import LanguageRecommendation from './components/LanguageRecommendation';
 import Setup2FA from './pages/Setup2FA';
+import Verify2FA from './pages/Verify2FA';
 
 import Home from './pages/Home';
 import Doctors from './pages/Doctors';
@@ -79,6 +80,8 @@ const App = () => {
         <Route path='/forgot-password' element={<ForgotPassword />} />
         <Route path='/verify-otp' element={<VerifyOtp />} />
         <Route path='/reset-password' element={<ResetPassword />} />
+        <Route path="/verify-2fa" element={<Verify2FA />} />
+
       </Routes>
 
       <Footer />

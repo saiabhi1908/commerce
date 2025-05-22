@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { AppContext } from '../context/AppContext';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { useNavigate, Link } from 'react-router-dom'; // <-- Added Link import
+import { useNavigate, Link } from 'react-router-dom';
 
 const Login = () => {
   const [state, setState] = useState('Sign Up');
@@ -45,8 +45,13 @@ const Login = () => {
         const { data } = await axios.post(`${backendUrl}/api/user/login`, { email, password });
 
         if (data.success) {
-          localStorage.setItem('token', data.token);
-          setToken(data.token);
+          if (data.twoFactorRequired) {
+            localStorage.setItem("2fa_email", email);
+            navigate('/verify-2fa');
+          } else {
+            localStorage.setItem('token', data.token);
+            setToken(data.token);
+          }
         } else {
           toast.error(data.message);
         }
@@ -121,7 +126,6 @@ const Login = () => {
               />
               {state === 'Login' && (
                 <p className="text-right text-blue-600 text-sm mt-1 w-full">
-                  {/* Replaced <a> with Link */}
                   <Link to="/forgot-password" className="hover:underline">Forgot Password?</Link>
                 </p>
               )}
