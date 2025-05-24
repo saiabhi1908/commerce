@@ -7,7 +7,7 @@ const NearbyHospitals = ({ lat, lng }) => {
   useEffect(() => {
     if (lat && lng) {
       axios
-        .get(`https://commerce-v9e9.onrender.com/api/places/nearby?lat=${lat}&lng=${lng}`)
+        .get(`http://localhost:4000/api/places/nearby?lat=${lat}&lng=${lng}`)
         .then((response) => setPlaces(response.data.results))
         .catch((error) => console.error("Error fetching places:", error));
     }
@@ -18,26 +18,43 @@ const NearbyHospitals = ({ lat, lng }) => {
       <h2 style={styles.title}>Nearby Hospitals</h2>
       <div style={styles.hospitalList}>
         {places.length > 0 ? (
-          places.map((place) => (
-            <a
-              key={place.place_id}
-              href={
-                place.website ||
-                `https://www.google.com/maps/place/?q=place_id:${place.place_id}`
-              }
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ textDecoration: "none" }}
-            >
-              <div style={styles.hospitalCard}>
-                <h3 style={styles.hospitalName}>{place.name}</h3>
-                <p style={styles.hospitalVicinity}>{place.vicinity}</p>
-                <p style={styles.hospitalRating}>
-                  ⭐ {place.rating || "N/A"}
-                </p>
-              </div>
-            </a>
-          ))
+          places.map((place) => {
+            const isContinental =
+              place.name?.toLowerCase().includes("continental");
+
+            return (
+              <a
+                key={place.place_id}
+                href={
+                  place.website ||
+                  `https://www.google.com/maps/place/?q=place_id:${place.place_id}`
+                }
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ textDecoration: "none" }}
+              >
+                <div
+                  style={{
+                    ...styles.hospitalCard,
+                    border: isContinental
+                      ? "2px solid #007BFF"
+                      : styles.hospitalCard.border,
+                  }}
+                >
+                  <h3 style={styles.hospitalName}>
+                    {place.name}
+                    {isContinental && (
+                      <span style={styles.continentalBadge}> ★</span>
+                    )}
+                  </h3>
+                  <p style={styles.hospitalVicinity}>{place.vicinity}</p>
+                  <p style={styles.hospitalRating}>
+                    ⭐ {place.rating || "N/A"}
+                  </p>
+                </div>
+              </a>
+            );
+          })
         ) : (
           <p>No hospitals found nearby.</p>
         )}
@@ -46,7 +63,7 @@ const NearbyHospitals = ({ lat, lng }) => {
   );
 };
 
-// Styles as JS objects
+// Styles
 const styles = {
   hospitalsContainer: {
     maxWidth: "1200px",
@@ -84,6 +101,11 @@ const styles = {
     color: "#007BFF",
     marginBottom: "6px",
     lineHeight: "1.3",
+  },
+  continentalBadge: {
+    color: "#FF5722",
+    marginLeft: "6px",
+    fontSize: "1.1rem",
   },
   hospitalVicinity: {
     fontSize: "0.85rem",

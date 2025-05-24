@@ -13,19 +13,35 @@ router.get("/nearby", async (req, res) => {
   }
 
   try {
+    const baseParams = {
+      location: `${lat},${lng}`,
+      radius: req.query.radius || 10000, // 10 km default
+      type: type || "hospital",
+      key: process.env.GOOGLE_API_KEY,
+    };
+
     const nearbyRes = await axios.get(
       "https://maps.googleapis.com/maps/api/place/nearbysearch/json",
-      {
-        params: {
-          location: `${lat},${lng}`,
-          radius: 5000,
-          type: type || "hospital",
-          key: process.env.GOOGLE_API_KEY,
-        },
-      }
+      { params: baseParams }
     );
 
-    const places = nearbyRes.data.results;
+    let places = nearbyRes.data.results;
+
+    if (nearbyRes.data.next_page_token) {
+      await new Promise((r) => setTimeout(r, 2000));
+      const nextPageRes = await axios.get(
+        "https://maps.googleapis.com/maps/api/place/nearbysearch/json",
+        {
+          params: {
+            pagetoken: nearbyRes.data.next_page_token,
+            key: process.env.GOOGLE_API_KEY,
+          },
+        }
+      );
+      places = [...places, ...nextPageRes.data.results];
+    }
+
+    places = places.slice(0, 32);
 
     const detailedPlaces = await Promise.all(
       places.map(async (place) => {
@@ -50,9 +66,16 @@ router.get("/nearby", async (req, res) => {
       })
     );
 
-    res.json({ results: detailedPlaces });
+    // ✅ Sort so Continental Hospitals come first
+    const sortedPlaces = detailedPlaces.sort((a, b) => {
+      const aIsContinental = a.name?.toLowerCase().includes("continental") ? -1 : 1;
+      const bIsContinental = b.name?.toLowerCase().includes("continental") ? -1 : 1;
+      return aIsContinental - bIsContinental;
+    });
+
+    res.json({ results: sortedPlaces });
   } catch (error) {
-    console.error("Error fetching places:", error);
+    console.error("Error fetching places:", error.message);
     res.status(500).json({ error: "Error fetching places data" });
   }
 });
