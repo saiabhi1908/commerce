@@ -6,6 +6,13 @@ const AIChatBot = () => {
   const [userInput, setUserInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
+  const [appointmentStep, setAppointmentStep] = useState(null);
+  const [appointmentData, setAppointmentData] = useState({
+    name: "",
+    doctorId: "",
+    time: "",
+  });
+  const [doctors, setDoctors] = useState([]);
 
   const styles = {
     toggleButton: {
@@ -78,69 +85,113 @@ const AIChatBot = () => {
     },
   };
 
+  const addMessage = (sender, text) => {
+    setMessages((prev) => [...prev, { sender, text }]);
+  };
+
+  const handleAppointmentFlow = async (input) => {
+    let data = { ...appointmentData };
+
+    switch (appointmentStep) {
+      case "askName":
+        data.name = input;
+        addMessage("bot", "Thanks! Now select a doctor from the list:");
+        try {
+          const res = await axios.get("https://commerce-v9e9.onrender.com/api/doctors");
+          setDoctors(res.data);
+          addMessage("bot", res.data.map((doc, idx) => `${idx + 1}. ${doc.name} (${doc.specialization})`).join("\n"));
+          setAppointmentStep("chooseDoctor");
+        } catch {
+          addMessage("bot", "Failed to load doctors.");
+          setAppointmentStep(null);
+        }
+        break;
+
+      case "chooseDoctor":
+        const idx = parseInt(input) - 1;
+        if (isNaN(idx) || idx < 0 || idx >= doctors.length) {
+          addMessage("bot", "Invalid choice. Please select a doctor by number.");
+        } else {
+          data.doctorId = doctors[idx].id;
+          addMessage("bot", `Great! What time do you want the appointment (e.g., 3pm tomorrow)?`);
+          setAppointmentStep("askTime");
+        }
+        break;
+
+      case "askTime":
+        data.time = input;
+        try {
+          await axios.post("https://commerce-v9e9.onrender.com/api/appointments", data);
+          addMessage("bot", `Appointment booked with Doctor ID ${data.doctorId} at ${data.time}.`);
+        } catch {
+          addMessage("bot", "Failed to book appointment. Please try again.");
+        }
+        setAppointmentStep(null);
+        setAppointmentData({ name: "", doctorId: "", time: "" });
+        break;
+
+      default:
+        break;
+    }
+
+    setAppointmentData(data);
+  };
+
   const handleSendMessage = async () => {
     if (!userInput.trim()) return;
 
-    const newMessages = [...messages, { sender: "user", text: userInput }];
-    setMessages(newMessages);
+    const input = userInput;
+    addMessage("user", input);
     setUserInput("");
     setLoading(true);
 
-    // Check if the user is asking for nearby hospitals
-    if (userInput.toLowerCase().includes("find a hospital") || userInput.toLowerCase().includes("nearest hospital")) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
+    if (appointmentStep) {
+      await handleAppointmentFlow(input);
+      setLoading(false);
+      return;
+    }
 
-          axios.get(`http://localhost:4000/api/places/nearby?lat=${latitude}&lng=${longitude}`)
-            .then(response => {
-              const places = response.data.results;
-              const reply = places.length
-                ? places.slice(0, 5).map(place => `${place.name}, ${place.vicinity}`).join("\n")
-                : "No hospitals found nearby.";
-              
-              setMessages([...newMessages, { sender: "bot", text: reply }]);
-            })
-            .catch(() => setMessages([...newMessages, { sender: "bot", text: "Sorry, couldn't fetch hospital data." }]));
+    if (input.toLowerCase().includes("book an appointment")) {
+      addMessage("bot", "Sure! What's your name?");
+      setAppointmentStep("askName");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${import.meta.env.VITE_OPENROUTER_API_KEY}`,
         },
-        (error) => setMessages([...newMessages, { sender: "bot", text: "Please enable location access." }])
-      );
-    } else {
-      try {
-        const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${import.meta.env.VITE_OPENROUTER_API_KEY}`,
-          },
-          body: JSON.stringify({
-            model: "mistralai/mistral-7b-instruct",
-            messages: [
-              {
-                role: "system",
-                content:
-                  "You are a helpful assistant for the Prescripta platform. Help users with booking doctor appointments, managing prescriptions, and using the platform. Keep responses short, clear, and focused. Avoid long paragraphs or unrelated content.",
-              },
-              ...newMessages.map((msg) => ({
-                role: msg.sender === "user" ? "user" : "assistant",
-                content: msg.text,
-              })),
-            ],
-          }),
-        });
+        body: JSON.stringify({
+          model: "mistralai/mistral-7b-instruct",
+          messages: [
+            {
+              role: "system",
+              content:
+                "You are a helpful assistant for the Prescripta platform. Help users with booking doctor appointments, managing prescriptions, and using the platform. Keep responses short, clear, and focused. Avoid long paragraphs or unrelated content.",
+            },
+            ...messages.map((msg) => ({
+              role: msg.sender === "user" ? "user" : "assistant",
+              content: msg.text,
+            })),
+            { role: "user", content: input },
+          ],
+        }),
+      });
 
-        const data = await response.json();
-
-        if (data.choices && data.choices.length > 0) {
-          const botReply = data.choices[0].message.content;
-          setMessages([...newMessages, { sender: "bot", text: botReply.trim() }]);
-        } else {
-          setMessages([...newMessages, { sender: "bot", text: "Sorry, no response received." }]);
-        }
-      } catch (error) {
-        console.error("Error:", error);
-        setMessages([...newMessages, { sender: "bot", text: "Error: Could not reach chatbot API." }]);
+      const data = await response.json();
+      const botReply = data.choices?.[0]?.message?.content;
+      if (botReply) {
+        addMessage("bot", botReply.trim());
+      } else {
+        addMessage("bot", "Sorry, no response received.");
       }
+    } catch (error) {
+      console.error("Chat API error:", error);
+      addMessage("bot", "Error: Could not reach chatbot API.");
     }
 
     setLoading(false);
