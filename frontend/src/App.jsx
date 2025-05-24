@@ -4,7 +4,7 @@ import { Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import VoiceAssistant from './components/VoiceAssistant';
-import AIChatBot from './components/AIChatBot';
+
 import NearbyHospitals from './components/NearbyHospitals';
 import LanguageRecommendation from './components/LanguageRecommendation';
 import Setup2FA from './pages/Setup2FA';
@@ -55,7 +55,6 @@ const App = () => {
       <ToastContainer />
       <Navbar />
       <VoiceAssistant />
-      <AIChatBot />
 
       {currentLocation.pathname === '/' && <LanguageRecommendation />}
 
